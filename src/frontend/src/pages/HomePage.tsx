@@ -5,16 +5,10 @@ import { ArrowRight, Award, Leaf, Mail, Shield, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Product } from "../backend.d";
 import BlogCard from "../components/BlogCard";
 import ProductCard from "../components/ProductCard";
 import { fallbackBlogPosts, fallbackProducts } from "../data/fallbackData";
-import { useAllProducts } from "../hooks/useQueries";
-import { useAllBlogPosts } from "../hooks/useQueries";
-
-interface HomePageProps {
-  onAddToCart: (product: Product) => void;
-}
+import { useAllBlogPosts, useAllProducts } from "../hooks/useQueries";
 
 const staggerContainer = {
   hidden: {},
@@ -51,7 +45,7 @@ const values = [
   },
 ];
 
-export default function HomePage({ onAddToCart }: HomePageProps) {
+export default function HomePage() {
   const [email, setEmail] = useState("");
   const { data: products } = useAllProducts();
   const { data: blogPosts } = useAllBlogPosts();
@@ -217,7 +211,7 @@ export default function HomePage({ onAddToCart }: HomePageProps) {
           >
             {displayProducts.map((product) => (
               <motion.div key={product.id} variants={fadeUp}>
-                <ProductCard product={product} onAddToCart={onAddToCart} />
+                <ProductCard product={product} />
               </motion.div>
             ))}
           </motion.div>

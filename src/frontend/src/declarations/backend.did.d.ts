@@ -28,6 +28,23 @@ export interface ContactMessage {
   'message' : string,
   'phone' : string,
 }
+export interface Order {
+  'id' : string,
+  'customerName' : string,
+  'status' : string,
+  'customerPhone' : string,
+  'createdAt' : bigint,
+  'customerAddress' : string,
+  'totalAmount' : number,
+  'items' : Array<OrderItem>,
+  'customerEmail' : string,
+}
+export interface OrderItem {
+  'productId' : string,
+  'productName' : string,
+  'quantity' : bigint,
+  'price' : number,
+}
 export interface Product {
   'id' : string,
   'inStock' : boolean,
@@ -46,8 +63,12 @@ export interface _SERVICE {
   'getAllProducts' : ActorMethod<[], Array<Product>>,
   'getBlogPostById' : ActorMethod<[string], BlogPost>,
   'getContactMessages' : ActorMethod<[], Array<ContactMessage>>,
+  'getOrderById' : ActorMethod<[string], Order>,
+  'getOrders' : ActorMethod<[], Array<Order>>,
   'getProductsByCategory' : ActorMethod<[string], Array<Product>>,
+  'placeOrder' : ActorMethod<[Order], undefined>,
   'submitContactMessage' : ActorMethod<[ContactMessage], undefined>,
+  'updateOrderStatus' : ActorMethod<[string, string], undefined>,
   'updateProduct' : ActorMethod<[Product], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

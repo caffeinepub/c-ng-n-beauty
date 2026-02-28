@@ -2,14 +2,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, SearchX } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import type { Product } from "../backend.d";
 import ProductCard from "../components/ProductCard";
 import { fallbackProducts } from "../data/fallbackData";
 import { useAllProducts } from "../hooks/useQueries";
-
-interface ShopPageProps {
-  onAddToCart: (product: Product) => void;
-}
 
 const categories = [
   { key: "all", label: "Tất Cả" },
@@ -30,7 +25,7 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
 };
 
-export default function ShopPage({ onAddToCart }: ShopPageProps) {
+export default function ShopPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const { data: products, isLoading } = useAllProducts();
 
@@ -123,7 +118,7 @@ export default function ShopPage({ onAddToCart }: ShopPageProps) {
           >
             {filteredProducts.map((product) => (
               <motion.div key={product.id} variants={fadeUp}>
-                <ProductCard product={product} onAddToCart={onAddToCart} />
+                <ProductCard product={product} />
               </motion.div>
             ))}
           </motion.div>

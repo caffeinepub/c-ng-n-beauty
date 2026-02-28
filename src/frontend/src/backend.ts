@@ -107,6 +107,17 @@ export interface ContactMessage {
     message: string;
     phone: string;
 }
+export interface Order {
+    id: string;
+    customerName: string;
+    status: string;
+    customerPhone: string;
+    createdAt: bigint;
+    customerAddress: string;
+    totalAmount: number;
+    items: Array<OrderItem>;
+    customerEmail: string;
+}
 export interface Product {
     id: string;
     inStock: boolean;
@@ -114,6 +125,12 @@ export interface Product {
     description: string;
     imageUrl: string;
     category: string;
+    price: number;
+}
+export interface OrderItem {
+    productId: string;
+    productName: string;
+    quantity: bigint;
     price: number;
 }
 export interface backendInterface {
@@ -125,8 +142,12 @@ export interface backendInterface {
     getAllProducts(): Promise<Array<Product>>;
     getBlogPostById(id: string): Promise<BlogPost>;
     getContactMessages(): Promise<Array<ContactMessage>>;
+    getOrderById(id: string): Promise<Order>;
+    getOrders(): Promise<Array<Order>>;
     getProductsByCategory(category: string): Promise<Array<Product>>;
+    placeOrder(order: Order): Promise<void>;
     submitContactMessage(message: ContactMessage): Promise<void>;
+    updateOrderStatus(id: string, status: string): Promise<void>;
     updateProduct(product: Product): Promise<void>;
 }
 export class Backend implements backendInterface {
@@ -243,6 +264,34 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getOrderById(arg0: string): Promise<Order> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getOrderById(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getOrderById(arg0);
+            return result;
+        }
+    }
+    async getOrders(): Promise<Array<Order>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getOrders();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getOrders();
+            return result;
+        }
+    }
     async getProductsByCategory(arg0: string): Promise<Array<Product>> {
         if (this.processError) {
             try {
@@ -257,6 +306,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async placeOrder(arg0: Order): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.placeOrder(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.placeOrder(arg0);
+            return result;
+        }
+    }
     async submitContactMessage(arg0: ContactMessage): Promise<void> {
         if (this.processError) {
             try {
@@ -268,6 +331,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.submitContactMessage(arg0);
+            return result;
+        }
+    }
+    async updateOrderStatus(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateOrderStatus(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateOrderStatus(arg0, arg1);
             return result;
         }
     }

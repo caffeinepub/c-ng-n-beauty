@@ -3,16 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+import { useCart } from "../context/CartContext";
 
 interface HeaderProps {
-  cartItems: CartItem[];
+  onOpenCart: () => void;
 }
 
 const navLinks = [
@@ -23,11 +17,11 @@ const navLinks = [
   { href: "/contact", label: "Liên Hệ" },
 ];
 
-export default function Header({ cartItems }: HeaderProps) {
+export default function Header({ onOpenCart }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const { cartCount } = useCart();
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -62,16 +56,20 @@ export default function Header({ cartItems }: HeaderProps) {
 
           {/* Cart + Mobile Menu */}
           <div className="flex items-center gap-3">
-            <Link to="/shop" aria-label={`Giỏ hàng (${cartCount} sản phẩm)`}>
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingBag className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <Badge className="absolute -top-1.5 -right-1.5 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground">
-                    {cartCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              onClick={onOpenCart}
+              aria-label={`Giỏ hàng (${cartCount} sản phẩm)`}
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <Badge className="absolute -top-1.5 -right-1.5 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground">
+                  {cartCount}
+                </Badge>
+              )}
+            </Button>
 
             <Button
               variant="ghost"

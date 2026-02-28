@@ -8,62 +8,31 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { useState } from "react";
-import type { Product } from "./backend.d";
+import CartDrawer from "./components/CartDrawer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import { CartProvider } from "./context/CartContext";
 import AboutPage from "./pages/AboutPage";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import BlogPage from "./pages/BlogPage";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
 import ContactPage from "./pages/ContactPage";
 import HomePage from "./pages/HomePage";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import ShopPage from "./pages/ShopPage";
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-function toCartItem(product: Product): CartItem {
-  return {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    quantity: 1,
-  };
-}
-
-// We need to share cart state across pages — use module-level state with a callback
-let globalAddToCart: (product: Product) => void = () => {};
-
 function Layout() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  const handleAddToCart = (product: Product) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      return [...prev, toCartItem(product)];
-    });
-  };
-
-  // Store refs for child routes to access
-  globalAddToCart = handleAddToCart;
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header cartItems={cartItems} />
+      <Header onOpenCart={() => setCartOpen(true)} />
       <div className="flex-1">
         <Outlet />
       </div>
       <Footer />
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
       <Toaster richColors position="top-right" />
     </div>
   );
@@ -87,13 +56,13 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: () => <HomePage onAddToCart={globalAddToCart} />,
+  component: HomePage,
 });
 
 const shopRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/shop",
-  component: () => <ShopPage onAddToCart={globalAddToCart} />,
+  component: ShopPage,
 });
 
 const blogRoute = createRoute({
@@ -120,6 +89,24 @@ const contactRoute = createRoute({
   component: ContactPage,
 });
 
+const cartRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/cart",
+  component: CartPage,
+});
+
+const checkoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/checkout",
+  component: CheckoutPage,
+});
+
+const orderConfirmationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/order-confirmation",
+  component: OrderConfirmationPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   shopRoute,
@@ -127,6 +114,9 @@ const routeTree = rootRoute.addChildren([
   blogDetailRoute,
   aboutRoute,
   contactRoute,
+  cartRoute,
+  checkoutRoute,
+  orderConfirmationRoute,
 ]);
 
 const router = createRouter({ routeTree });
@@ -138,5 +128,9 @@ declare module "@tanstack/react-router" {
 }
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
+  );
 }

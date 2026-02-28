@@ -35,6 +35,23 @@ export const ContactMessage = IDL.Record({
   'message' : IDL.Text,
   'phone' : IDL.Text,
 });
+export const OrderItem = IDL.Record({
+  'productId' : IDL.Text,
+  'productName' : IDL.Text,
+  'quantity' : IDL.Nat,
+  'price' : IDL.Float64,
+});
+export const Order = IDL.Record({
+  'id' : IDL.Text,
+  'customerName' : IDL.Text,
+  'status' : IDL.Text,
+  'customerPhone' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'customerAddress' : IDL.Text,
+  'totalAmount' : IDL.Float64,
+  'items' : IDL.Vec(OrderItem),
+  'customerEmail' : IDL.Text,
+});
 
 export const idlService = IDL.Service({
   'addBlogPost' : IDL.Func([BlogPost], [], []),
@@ -45,8 +62,12 @@ export const idlService = IDL.Service({
   'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getBlogPostById' : IDL.Func([IDL.Text], [BlogPost], ['query']),
   'getContactMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
+  'getOrderById' : IDL.Func([IDL.Text], [Order], ['query']),
+  'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
   'getProductsByCategory' : IDL.Func([IDL.Text], [IDL.Vec(Product)], ['query']),
+  'placeOrder' : IDL.Func([Order], [], []),
   'submitContactMessage' : IDL.Func([ContactMessage], [], []),
+  'updateOrderStatus' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'updateProduct' : IDL.Func([Product], [], []),
 });
 
@@ -80,6 +101,23 @@ export const idlFactory = ({ IDL }) => {
     'message' : IDL.Text,
     'phone' : IDL.Text,
   });
+  const OrderItem = IDL.Record({
+    'productId' : IDL.Text,
+    'productName' : IDL.Text,
+    'quantity' : IDL.Nat,
+    'price' : IDL.Float64,
+  });
+  const Order = IDL.Record({
+    'id' : IDL.Text,
+    'customerName' : IDL.Text,
+    'status' : IDL.Text,
+    'customerPhone' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'customerAddress' : IDL.Text,
+    'totalAmount' : IDL.Float64,
+    'items' : IDL.Vec(OrderItem),
+    'customerEmail' : IDL.Text,
+  });
   
   return IDL.Service({
     'addBlogPost' : IDL.Func([BlogPost], [], []),
@@ -90,12 +128,16 @@ export const idlFactory = ({ IDL }) => {
     'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getBlogPostById' : IDL.Func([IDL.Text], [BlogPost], ['query']),
     'getContactMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
+    'getOrderById' : IDL.Func([IDL.Text], [Order], ['query']),
+    'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
     'getProductsByCategory' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(Product)],
         ['query'],
       ),
+    'placeOrder' : IDL.Func([Order], [], []),
     'submitContactMessage' : IDL.Func([ContactMessage], [], []),
+    'updateOrderStatus' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'updateProduct' : IDL.Func([Product], [], []),
   });
 };

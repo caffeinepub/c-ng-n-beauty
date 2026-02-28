@@ -1,8 +1,11 @@
 import List "mo:core/List";
 import Text "mo:core/Text";
+import Float "mo:core/Float";
 import Map "mo:core/Map";
 import Runtime "mo:core/Runtime";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   // Types
   type Product = {
@@ -35,10 +38,30 @@ actor {
     createdAt : Int;
   };
 
+  type OrderItem = {
+    productId : Text;
+    productName : Text;
+    price : Float;
+    quantity : Nat;
+  };
+
+  type Order = {
+    id : Text;
+    customerName : Text;
+    customerEmail : Text;
+    customerPhone : Text;
+    customerAddress : Text;
+    items : [OrderItem];
+    totalAmount : Float;
+    status : Text; // "pending", "confirmed", "shipped", "delivered"
+    createdAt : Int;
+  };
+
   // Storage
   let products = Map.empty<Text, Product>();
   let blogPosts = Map.empty<Text, BlogPost>();
   let contactMessages = Map.empty<Text, ContactMessage>();
+  let orders = Map.empty<Text, Order>();
 
   // Products
   public query ({ caller }) func getAllProducts() : async [Product] {
@@ -112,5 +135,41 @@ actor {
       Runtime.trap("Message with id already exists");
     };
     contactMessages.add(message.id, message);
+  };
+
+  // Orders
+  public shared ({ caller }) func placeOrder(order : Order) : async () {
+    if (orders.containsKey(order.id)) {
+      Runtime.trap("Order with id already exists");
+    };
+    orders.add(order.id, order);
+  };
+
+  public query ({ caller }) func getOrders() : async [Order] {
+    orders.values().toArray();
+  };
+
+  public query ({ caller }) func getOrderById(id : Text) : async Order {
+    switch (orders.get(id)) {
+      case (null) { Runtime.trap("Order not found") };
+      case (?order) { order };
+    };
+  };
+
+  public shared ({ caller }) func updateOrderStatus(id : Text, status : Text) : async () {
+    let validStatuses = ["pending", "confirmed", "shipped", "delivered"];
+    let isValidStatus = validStatuses.find(func(s) { Text.equal(s, status) }) != null;
+
+    if (not isValidStatus) {
+      Runtime.trap("Invalid order status. Must be one of: pending, confirmed, shipped, delivered");
+    };
+
+    switch (orders.get(id)) {
+      case (null) { Runtime.trap("Order not found") };
+      case (?order) {
+        let updatedOrder = { order with status };
+        orders.add(id, updatedOrder);
+      };
+    };
   };
 };

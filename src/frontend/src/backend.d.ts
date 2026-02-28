@@ -25,6 +25,17 @@ export interface ContactMessage {
     message: string;
     phone: string;
 }
+export interface Order {
+    id: string;
+    customerName: string;
+    status: string;
+    customerPhone: string;
+    createdAt: bigint;
+    customerAddress: string;
+    totalAmount: number;
+    items: Array<OrderItem>;
+    customerEmail: string;
+}
 export interface Product {
     id: string;
     inStock: boolean;
@@ -32,6 +43,12 @@ export interface Product {
     description: string;
     imageUrl: string;
     category: string;
+    price: number;
+}
+export interface OrderItem {
+    productId: string;
+    productName: string;
+    quantity: bigint;
     price: number;
 }
 export interface backendInterface {
@@ -43,7 +60,11 @@ export interface backendInterface {
     getAllProducts(): Promise<Array<Product>>;
     getBlogPostById(id: string): Promise<BlogPost>;
     getContactMessages(): Promise<Array<ContactMessage>>;
+    getOrderById(id: string): Promise<Order>;
+    getOrders(): Promise<Array<Order>>;
     getProductsByCategory(category: string): Promise<Array<Product>>;
+    placeOrder(order: Order): Promise<void>;
     submitContactMessage(message: ContactMessage): Promise<void>;
+    updateOrderStatus(id: string, status: string): Promise<void>;
     updateProduct(product: Product): Promise<void>;
 }

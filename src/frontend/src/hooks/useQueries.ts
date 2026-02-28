@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import type { BlogPost, ContactMessage, Product } from "../backend.d";
+import type { BlogPost, ContactMessage, Order, Product } from "../backend.d";
 import { useActor } from "./useActor";
 
 export function useAllProducts() {
@@ -75,6 +75,16 @@ export function useSubmitContact() {
     mutationFn: async (message: ContactMessage) => {
       if (!actor) throw new Error("Actor not available");
       return await actor.submitContactMessage(message);
+    },
+  });
+}
+
+export function usePlaceOrder() {
+  const { actor } = useActor();
+  return useMutation({
+    mutationFn: async (order: Order) => {
+      if (!actor) throw new Error("Actor not available");
+      return await actor.placeOrder(order);
     },
   });
 }

@@ -2,23 +2,31 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ShoppingBag, Star } from "lucide-react";
 import type { Product } from "../backend.d";
+import { useCart } from "../context/CartContext";
 import { categoryLabel, formatVND } from "../lib/format";
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (product: Product) => void;
 }
 
-export default function ProductCard({
-  product,
-  onAddToCart,
-}: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart();
+
   const badgeClass =
     product.category === "skincare"
       ? "badge-skincare"
       : product.category === "makeup"
         ? "badge-makeup"
         : "badge-haircare";
+
+  const handleAdd = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      imageUrl: product.imageUrl,
+    });
+  };
 
   return (
     <article className="product-card bg-card rounded-xl overflow-hidden border border-border group">
@@ -69,7 +77,7 @@ export default function ProductCard({
           </span>
           <Button
             size="sm"
-            onClick={() => onAddToCart(product)}
+            onClick={handleAdd}
             disabled={!product.inStock}
             className="btn-shine bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3 text-xs gap-1.5"
           >
